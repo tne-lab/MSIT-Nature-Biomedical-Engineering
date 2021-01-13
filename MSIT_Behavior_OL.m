@@ -222,6 +222,9 @@ for ii=1:length(allSubj)
 end
 
 %% Fit state-space model using COMPASS toolbox.
+% The COMPASS toolbox can be downloaded from either of the 2 repositories
+% https://github.com/Eden-Kramer-Lab/COMPASS
+% https://github.com/YousefiLab/COMPASS
 
 nIter = 1000;
 
