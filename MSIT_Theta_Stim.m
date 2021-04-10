@@ -1,12 +1,9 @@
 %% This script is to analyze theta evoked during stimulation blocks of MSIT 
-
 clear all
-% Load PSD
-MainPath='D:\BasuDDrive\MSIT paper\Neural Data\Theta Stim analysis\';
-Subject='MG96';
-stimType='STIM';
-
-load([MainPath,Subject,'PSD',stimType,'.mat']);
+MainPath='E:\MSIT data for NatureBME\PSD\';
+Subject='P11';
+stimType='Stim1';
+load([MainPath,'PSD_',Subject,'_',stimType,'.mat']);
 
 %% Pre screening: Finding channels that have enhanced theta after image onset in NoStim block trials
 % 1. Use Theta pre and post image 
@@ -30,8 +27,8 @@ end
 
 Theta_channels=find(sum(H,2)>0);
 
-% 2. Use all of PFC channels
-Pfc_channels=[1:41,51:65,99:136,150:161]';
+% 2. Use all of PFC/ channels, specify the channel numbers, or use parcellation values
+Pfc_channels=find(ismember(ParcellationValues(:,8),[1:6,8,10:12]));
 
 
 %% GLM analysis: ERP subtraction
@@ -99,7 +96,7 @@ Theta_C=nanmean(nanmean(ft_freqC.powspctrm(:,channels,:,Id_time1),4),3);
 Theta_I0=nanmean(nanmean(ft_freqI.powspctrm(:,channels,:,Id_time0),4),3);
 Theta_I=nanmean(nanmean(ft_freqI.powspctrm(:,channels,:,Id_time1),4),3);
 
-save([MainPath,Subject,'PSD',stimType,'.mat'],'Trials_C','Trials_I','Theta_C','Theta_C0','Theta_I','Theta_I0','channels','Pfc_channels','-append');
+save([MainPath,'PSD_',Subject,'_',stimType,'.mat'],'Trials_C','Trials_I','Theta_C','Theta_C0','Theta_I','Theta_I0','channels','Pfc_channels','-append');
 
 %% GLME alalysis: finding optimal stimulation site based on RT.
 Trials_NS0=find(strcmp(StimLocation,'None')==1 & ~isnan(TrialDet(:,12)));
