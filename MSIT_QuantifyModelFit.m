@@ -1,8 +1,8 @@
 %% This script is to evaluate Encoder model fit such as Error Metrics
 
 Subject_Stim=[{'P08'},{'P09'},{'P10'},{'P11'},{'P12'},{'P13'},{'P14'},{'P15'},{'P17'}];
-files_base=dir('*Base.mat');
-files_conf=dir('*Conflict.mat');
+files_base=dir('E:\MSIT data for NatureBME\PSD\Models_Base\*.mat');
+files_conf=dir('E:\MSIT data for NatureBME\PSD\Models_Conflict\*.mat');
 
 % Finding number of subjects that have a feature in specific region and freq band
 
@@ -90,34 +90,6 @@ ylabel('Neural Features #')
 
 
 %% RMSE curves
-
-fname='MG120_Model_Conflict.mat';
-load(fname, 'ModelSetting', 'SampleX', 'TestInd', 'TrainInd', 'dValid', 'data_type', 'eParam', 'sParam')
-x_min = -2;
-x_max =  2;
-sample= 2000;
-Xs    = linspace(x_min,x_max,sample);
-TransP = ones(length(Xs),length(Xs));
-for i=1:length(Xs)
-    TransP(i,:)=pdf('normal',Xs(i),sParam.a*Xs,sqrt(sParam.sv));
-end
-TProb = ay_individual_decoder(data_type,eParam,Xs,dValid(:,1),Y);
-XProb = TProb;
-for f=1:length(TProb)
-    if  TProb{f}.valid
-        TProb{f}.prb=TProb{f}.prb(TrainInd,:);
-    end
-end
-[rmse_ind,rmse_curve_train,optim_curve,winner_list] = ay_sort_decoder_sub(TProb,Xs,dValid(:,1),SampleX(:,TrainInd));
-for f=1:length(XProb)
-    if  XProb{f}.valid
-        XProb{f}.prb=XProb{f}.prb(TestInd,:);
-    end
-end
-[xrmse_ind,rmse_curve_test,xoptim_curve,xwinner_list] = ay_sort_decoder_sub(XProb,Xs,dValid(:,1),SampleX(:,TestInd));
-plot(rmse_curve_train);hold on;plot(rmse_curve_test)
-save(fname, 'rmse_curve_train','rmse_curve_test','-append')
-
 files_base=dir('*Base.mat');
 
 RMSE_base=nan(length(files_base),500);
