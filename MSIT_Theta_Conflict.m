@@ -1,9 +1,9 @@
 %% This script is to analyze theta evoked during high v low conflict trials of MSIT with no stimulation
 clear all
-MainPath='D:\BasuDDrive\MSIT paper\Neural Data\Theta I-C analysis\';
-Subject='P09';
-stimType='No_Stim';
-load([MainPath,Subject,'PSD',stimType,'.mat']);
+MainPath='E:\MSIT data for NatureBME\PSD\';
+Subject='P11';
+stimType='NoStim1';
+load([MainPath,'PSD_',Subject,'_',stimType,'.mat']);
 
 %% Pre screening for channel selection: 1) Finding channels that have enhanced theta after image onset in NoStim block trials, 2) Use all PFC channels
 % 1. Use Theta pre and post image 
@@ -27,8 +27,8 @@ end
 
 Theta_channels=find(sum(H,2)>0);
 
-% 2. Use all of PFC channels, specify the channel numbers
-Pfc_channels=[1:41,51:65,99:136,150:161]';
+% 2. Use all of PFC/ channels, specify the channel numbers, or use parcellation values
+Pfc_channels=find(ismember(ParcellationValues(:,8),[1:6,8,10:12]));
 
 %% Theta Analysis for High>Low conflict trials in the No-Stim blocks (NS1 trials)
 Trials_C=find(~isnan(TrialDet(:,12)) & TrialDet(:,14)==1);
@@ -91,9 +91,9 @@ Theta_C=nanmean(nanmean(ft_freqC.powspctrm(:,channels,:,Id_time1),4),3);
 Theta_I0=nanmean(nanmean(ft_freqI.powspctrm(:,channels,:,Id_time0),4),3);
 Theta_I=nanmean(nanmean(ft_freqI.powspctrm(:,channels,:,Id_time1),4),3);
 
-save([loadPath,Subject,'PSD',stimType,'.mat'],'Trials_C','Trials_I','ThetaC','ThetaC0','ThetaI','ThetaI0','-append');
+save([MainPath,'PSD_',Subject,'_',stimType,'.mat'],'Trials_C','Trials_I','ThetaC','ThetaC0','ThetaI','ThetaI0','-append');
 
-% Regression analysis
+%% Regression analysis
 clear all
 % Structure data
 filename=dir('*.mat');
