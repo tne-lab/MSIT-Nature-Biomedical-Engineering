@@ -1,13 +1,11 @@
-%% This script is to fir an encoder model and then use a feature reduction procedure to determine a reduced model
+%% This script is to fit an encoder model and then use a feature reduction procedure to determine a reduced model
 clear all
 
-ReadFile='D:\BasuDDrive\MSIT paper\Neural Data\Extracted Features\';
-SaveFile='D:\BasuDDrive\MSIT paper\Neural Data\Models\';
+ReadFile='E:\MSIT data for NatureBME\PSD\Extracted Features\';
+SaveFile='E:\MSIT data for NatureBME\PSD\Models_Base\'; % Use a different directory (Models_Conflict) for conflict state models
 
-subject='P09';
-stimType='Stim';
-
-file_name = [ReadFile,subject,'_features_',stimType,'.mat'];
+subject='P10';
+file_name = [ReadFile,subject,'_features.mat'];
 
 %% Training Phase 
 x_min = -2;
@@ -22,7 +20,7 @@ ModelSetting.pName             = [SaveFile,subject,'_Model_Trainon_NoStim'];
 ModelSetting.pVal             = 0.01;       % 0.05, 0.01, 0.001
 ModelSetting.SelMode          = 6;          % 6 or 7
 ModelSetting.NoStateSamples   = 1000;       % No of trajectories 
-ModelSetting.which_state      = 2;          % 1: Baseline, 2: Conflict
+ModelSetting.which_state      = 1;          % 1: Baseline, 2: Conflict
 ModelSetting.Xs = Xs;  
 
 % Load file containing neural features and state values
@@ -132,9 +130,9 @@ for f=1:length(TProb)
         TProb{f}.prb=TProb{f}.prb(TrainInd,:);
     end
 end
-[rmse_ind,rmse_curve,optim_curve,winner_list] = ay_sort_decoder_sub(TProb,Xs,dValid(:,1),SampleX(:,TrainInd));
+[rmse_ind,rmse_curve_train,optim_curve,winner_list] = ay_sort_decoder_sub(TProb,Xs,dValid(:,1),SampleX(:,TrainInd));
 figure(3)
-plot(rmse_curve,'LineWidth',2);
+plot(rmse_curve_train,'LineWidth',2);
 
 [~,ind]=min(rmse_curve);
 opt_train=rmse_ind{ind};
@@ -146,14 +144,14 @@ for f=1:length(XProb)
         XProb{f}.prb=XProb{f}.prb(TestInd,:);
     end
 end
-[xrmse_ind,xrmse_curve,xoptim_curve,xwinner_list] = ay_sort_decoder_sub(XProb,Xs,dValid(:,1),SampleX(:,TestInd));
+[rmse_ind,rmse_curve_test,optim_curve,winner_list] = ay_sort_decoder_sub(XProb,Xs,dValid(:,1),SampleX(:,TestInd));
 figure(4)
-plot(xrmse_curve,'LineWidth',2)
+plot(rmse_curve_test,'LineWidth',2)
 
-[~,ind]=min(xrmse_curve);
-opt_test=xrmse_ind{ind};
+[~,ind]=min(rmse_curve_test);
+opt_test=rmse_ind{ind};
 
-
+save(ModelName, 'rmse_curve_train','rmse_curve_test','-append')
 % Visualizing what the mean decoded state looks like with the reduced
 % features v all features 
 
@@ -309,9 +307,10 @@ save(ModelName,'XM','XS','XM_all','XS_all','XM_train','XS_train','XM_test','XS_t
 
 
 %% Shuffling state trajectories
+% Perform this after all the models have been determined
 clear all
-ReadFile='D:\MSIT Backup\MSIT paper\Neural Data\Extracted Features\';
-SaveFile='D:\MSIT Backup\MSIT paper\Neural Data\Shuffled Models\';
+ReadFile='E:\MSIT data for NatureBME\PSD\Extracted Features\';
+SaveFile='E:\MSIT data for NatureBME\PSD\Shuffled Models\';
 
 files=dir([ReadFile,'*.mat']);
 addpath 'D:\MSIT Backup\GH\Decoder_Encoder_Model_MultipleTrajectory'
